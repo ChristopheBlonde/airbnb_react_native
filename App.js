@@ -3,7 +3,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import {
+  Ionicons,
+  FontAwesome5,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import HomeScreen from "./containers/HomeScreen";
 import ProfileScreen from "./containers/ProfileScreen";
 import SignInScreen from "./containers/SignInScreen";
@@ -24,6 +28,7 @@ export default function App() {
       AsyncStorage.setItem("userToken", token);
     } else {
       AsyncStorage.removeItem("userToken");
+      AsyncStorage.removeItem("userInfo");
     }
 
     setUserToken(token);
@@ -86,17 +91,11 @@ export default function App() {
                       >
                         {(props) => <HomeScreen {...props} />}
                       </Stack.Screen>
-                      <Stack.Screen name="Room" options={{ title: "Room" }}>
-                        {(props) => <RoomScreen {...props} />}
-                      </Stack.Screen>
-
                       <Stack.Screen
-                        name="Profile"
-                        options={{
-                          title: "User Profile",
-                        }}
+                        name="Room"
+                        options={{ headerShown: false }}
                       >
-                        {() => <ProfileScreen />}
+                        {(props) => <RoomScreen {...props} />}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}
@@ -105,7 +104,7 @@ export default function App() {
                   name="Around"
                   options={{
                     tabBarLabel: "Around me",
-                    tabBarIcon: (color, size) => (
+                    tabBarIcon: ({ color, size }) => (
                       <FontAwesome5
                         name="map-marker-alt"
                         size={size}
@@ -116,19 +115,22 @@ export default function App() {
                 >
                   {() => (
                     <Stack.Navigator>
-                      <Stack.Screen name="Around">
-                        {() => <AroundScreen />}
+                      <Stack.Screen
+                        name="Around"
+                        options={{ headerShown: false }}
+                      >
+                        {(props) => <AroundScreen {...props} />}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}
                 </Tab.Screen>
                 <Tab.Screen
-                  name="Settings"
+                  name="Profile"
                   options={{
-                    tabBarLabel: "Settings",
+                    tabBarLabel: "My Profile",
                     tabBarIcon: ({ color, size }) => (
-                      <Ionicons
-                        name={"ios-options"}
+                      <MaterialCommunityIcons
+                        name="account"
                         size={size}
                         color={color}
                       />
@@ -141,7 +143,19 @@ export default function App() {
                         name="Settings"
                         options={{ title: "Settings", tabBarLabel: "Settings" }}
                       >
-                        {() => <SettingsScreen setToken={setToken} />}
+                        {(props) => (
+                          <SettingsScreen {...props} setToken={setToken} />
+                        )}
+                      </Stack.Screen>
+                      <Stack.Screen
+                        name="Profile"
+                        options={{
+                          headerShown: false,
+                        }}
+                      >
+                        {(props) => (
+                          <ProfileScreen {...props} setToken={setToken} />
+                        )}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}

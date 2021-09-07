@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/core";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   Text,
   TextInput,
@@ -26,6 +27,14 @@ export default function SignInScreen({ setToken }) {
   const [disableBtn, setDisableBtn] = useState(false);
   const [hidePassword, setHidePassword] = useState(true);
 
+  const idUserStorage = async (id) => {
+    try {
+      await AsyncStorage.setItem("userInfo", id);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!email || !password) {
       setShowIndicatorText(true);
@@ -43,6 +52,7 @@ export default function SignInScreen({ setToken }) {
         );
         if (response.status === 200) {
           alert(`Thanks ${response.data.username} your are connected`);
+          idUserStorage(response.data.id);
           setDisableBtn(false);
           setToken(response.data.token);
         }
@@ -53,7 +63,6 @@ export default function SignInScreen({ setToken }) {
       }
     }
   };
-
   return (
     <SafeAreaView>
       <ScrollView showsVerticalScrollIndicator={false}>
